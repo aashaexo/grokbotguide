@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grok Bot Field Guide</title>
+<meta name="description" content="How to use Grok Bot. Setup, a second brain, ten ready bots, and how to run a team of bots safely.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#000;--soft:#2a2a2a;--mute:#6a6a6a;--faint:#9a9a9a;
+  --line:rgba(0,0,0,.16);--wash:#f4f4f4;--bg:#fff;
+  --display:"VT323",ui-monospace,monospace;
+  --serif:"Source Serif 4",Georgia,serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  --ease:cubic-bezier(.23,1,.32,1);
+  --wrap:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;color:var(--ink);background:var(--bg);font:400 18px/1.65 var(--serif);-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(rgba(0,0,0,.13) 1px,transparent 1px);background-size:22px 22px}
+a{color:inherit}
+::selection{background:#000;color:#fff}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 28px}
+.mono{font-family:var(--mono)}
+.k{font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+
+/* header */
+header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #000}
+.bar{display:flex;align-items:center;gap:24px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:700 13px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.brand i{display:grid;place-items:center;width:28px;height:28px;background:#000;color:#fff;font:400 22px/1 var(--display);font-style:normal}
+nav.top{display:flex;gap:2px;margin-left:auto}
+nav.top a{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;padding:9px 10px;border:1px solid transparent}
+nav.top a:hover{border-color:#000}
+nav.top a.on{background:#000;color:#fff}
+.btn.menu{display:none;margin-left:auto}
+.prog{position:absolute;left:0;bottom:-1px;height:2px;background:#000;width:0}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;font:500 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;
+  padding:13px 18px;border:1px solid #000;background:#fff;color:#000;cursor:pointer;box-shadow:4px 4px 0 #000;
+  transition:transform 160ms var(--ease),box-shadow 160ms var(--ease)}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 #000}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 #000}
+.btn.solid{background:#000;color:#fff}
+.btn.sm{padding:8px 11px;font-size:11px;box-shadow:2px 2px 0 #000}
+.btn.sm:hover{box-shadow:3px 3px 0 #000}
+.btn.sm:active{transform:translate(2px,2px);box-shadow:0 0 0 #000}
+
+/* hero */
+.hero{padding:88px 0 72px;border-bottom:1px solid #000}
+.hero .k{display:flex;gap:14px;align-items:center}
+.hero .k:before{content:"";width:28px;height:1px;background:#000}
+h1{font:400 clamp(66px,10.5vw,150px)/.84 var(--display);margin:26px 0 30px;letter-spacing:-.01em;text-transform:uppercase}
+h1 span{display:inline-block;background:#000;color:#fff;padding:0 .12em}
+.lead{font-size:clamp(19px,2vw,23px);line-height:1.55;color:var(--soft);max-width:44ch;margin:0 0 36px}
+.cta{display:flex;flex-wrap:wrap;gap:16px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #000;margin-top:64px;background:#fff}
+.stats div{padding:20px 22px;border-right:1px solid #000}
+.stats div:last-child{border-right:0}
+.stats b{display:block;font:400 54px/1 var(--display)}
+.stats span{font:500 11px/1.4 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+
+/* contents */
+.toc{padding:72px 0;border-bottom:1px solid #000}
+.toc-h{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:26px}
+.toc-h h2{font:400 46px/1 var(--display);margin:8px 0 0;text-transform:uppercase}
+.toc-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #000;border-left:1px solid #000;background:#fff}
+.toc-grid a{display:block;text-decoration:none;padding:20px 20px 24px;border-right:1px solid #000;border-bottom:1px solid #000;min-height:150px;transition:background 160ms var(--ease),color 160ms var(--ease)}
+.toc-grid a:hover{background:#000;color:#fff}
+.toc-grid a:hover .k{color:#bbb}
+.toc-grid b{display:block;font:400 30px/1 var(--display);margin:14px 0 8px;text-transform:uppercase}
+.toc-grid p{margin:0;font-size:15px;line-height:1.45;color:inherit;opacity:.8}
+
+/* sections */
+.sec{display:grid;grid-template-columns:250px minmax(0,1fr);gap:56px;padding:96px 0;border-bottom:1px solid #000}
+.side{position:sticky;top:96px;align-self:start}
+.side .n{font:400 92px/.8 var(--display)}
+.side h2{font:400 40px/.95 var(--display);margin:16px 0 12px;text-transform:uppercase}
+.side .src{font:400 12px/1.5 var(--mono);color:var(--mute)}
+.body{max-width:800px}
+.body>p,.body .p{color:var(--soft);margin:0 0 20px;max-width:66ch}
+.body .intro{font-size:22px;line-height:1.5;color:#000}
+h3{font:400 34px/1 var(--display);margin:56px 0 14px;text-transform:uppercase;display:flex;gap:14px;align-items:baseline}
+h3 em{font-style:normal;font-size:20px;color:var(--mute)}
+h3:first-child{margin-top:0}
+h4{font:700 12px/1.3 var(--mono);letter-spacing:.12em;text-transform:uppercase;margin:28px 0 10px}
+ul.list,ol.list{margin:0 0 22px;padding:0;list-style:none;max-width:66ch}
+ul.list li,ol.list li{position:relative;padding:0 0 8px 26px;color:var(--soft)}
+ul.list li:before{content:"";position:absolute;left:4px;top:.72em;width:7px;height:7px;background:#000}
+ol.list{counter-reset:c}
+ol.list li{counter-increment:c}
+ol.list li:before{content:counter(c,decimal-leading-zero);position:absolute;left:0;top:.28em;font:700 11px/1 var(--mono)}
+b,strong{color:#000;font-weight:600}
+code{font:500 .86em var(--mono);background:var(--wash);border:1px solid var(--line);padding:1px 5px}
+.kbd{font:500 .82em var(--mono);border:1px solid #000;padding:1px 6px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+
+/* figures and prompts */
+.fig{border:1px solid #000;background:#fff;box-shadow:6px 6px 0 #000;margin:26px 0 34px}
+.fig-h{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #000;padding:8px 8px 8px 14px;font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;min-height:40px}
+.fig-h .t{color:var(--mute)}
+.fig pre{margin:0;padding:18px 20px;font:400 13.5px/1.7 var(--mono);overflow-x:auto;white-space:pre}
+.fig.wrap-pre pre{white-space:pre-wrap}
+.fig.inv{background:#000;color:#fff;box-shadow:6px 6px 0 #9a9a9a}
+.fig.inv .fig-h{border-color:#444}
+.fig.inv .fig-h .t{color:#aaa}
+.fig.inv .btn{background:#000;color:#fff;border-color:#fff;box-shadow:2px 2px 0 #fff}
+.fig img{display:block;width:100%;height:auto;filter:grayscale(1)}
+.cap{font:400 12px/1.5 var(--mono);color:var(--mute);padding:10px 14px;border-top:1px solid #000}
+
+/* steps */
+.steps{border-top:1px solid #000;margin:8px 0 30px}
+.step{display:grid;grid-template-columns:70px minmax(0,1fr);gap:18px;padding:22px 0;border-bottom:1px solid var(--line)}
+.step .no{font:400 46px/.9 var(--display)}
+.step h5{font:600 19px/1.3 var(--serif);margin:2px 0 6px}
+.step p{margin:0 0 10px;color:var(--soft)}
+.step p:last-child{margin-bottom:0}
+
+/* grids */
+.grid{display:grid;gap:0;border-top:1px solid #000;border-left:1px solid #000;margin:24px 0 34px;background:#fff}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
+.cell{border-right:1px solid #000;border-bottom:1px solid #000;padding:20px 20px 22px}
+.cell .k{display:block;margin-bottom:12px}
+.cell h5{font:400 26px/1 var(--display);margin:0 0 10px;text-transform:uppercase}
+.cell p{margin:0;font-size:16px;line-height:1.55;color:var(--soft)}
+.cell ul{margin:0;padding:0 0 0 18px;font-size:16px;color:var(--soft)}
+
+table{width:100%;border-collapse:collapse;margin:20px 0 32px;background:#fff;border:1px solid #000;font-size:16px}
+th{font:700 11px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:12px 14px;background:#000;color:#fff}
+td{padding:12px 14px;border-top:1px solid var(--line);vertical-align:top;color:var(--soft)}
+td:first-child{color:#000;font-weight:600}
+.tw{overflow-x:auto}
+
+.note{border-left:4px solid #000;background:#fff;padding:14px 18px;margin:24px 0 30px;font-size:16.5px;color:var(--soft);max-width:66ch}
+.note b{font:700 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:8px}
+
+/* bots */
+.how{display:flex;flex-wrap:wrap;border:1px solid #000;background:#fff;margin:6px 0 28px}
+.how div{flex:1 1 160px;padding:14px 16px;border-right:1px solid #000;font-size:15px;line-height:1.4;color:var(--soft)}
+.how div:last-child{border-right:0}
+.how b{display:block;font:400 26px/1 var(--display);color:#000;margin-bottom:4px}
+.bots{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.bot{all:unset;box-sizing:border-box;display:flex;flex-direction:column;cursor:pointer;border:1px solid #000;background:#fff;padding:18px 18px 16px;min-height:170px;
+  transition:transform 160ms var(--ease),box-shadow 160ms var(--ease)}
+.bot:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 #000}
+.bot:active{transform:translate(1px,1px);box-shadow:1px 1px 0 #000}
+.bot:focus-visible{outline:2px solid #000;outline-offset:3px}
+.bot .top{display:flex;justify-content:space-between;font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.bot b{font:400 34px/1 var(--display);text-transform:uppercase;margin:18px 0 8px}
+.bot span.s{font-size:16px;line-height:1.45;color:var(--soft)}
+.bot .go{margin-top:auto;padding-top:14px;font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase}
+
+/* team */
+.tree{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0 30px}
+.lead-bot{border:1px solid #000;background:#fff}
+.lead-bot .h{background:#000;color:#fff;padding:12px 14px}
+.lead-bot .h b{display:block;font:400 30px/1 var(--display);color:#fff;text-transform:uppercase}
+.lead-bot .h span{font:500 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#bbb}
+.lead-bot ul{list-style:none;margin:0;padding:6px 14px 10px}
+.lead-bot li{font-size:15px;padding:7px 0;border-bottom:1px dashed var(--line);color:var(--soft)}
+.lead-bot li:last-child{border-bottom:0}
+.you{display:flex;justify-content:center;margin-top:24px}
+.you div{border:1px solid #000;background:#000;color:#fff;font:400 26px/1 var(--display);padding:10px 22px;text-transform:uppercase}
+
+/* sources */
+.srcs a{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:16px;align-items:baseline;padding:16px 0;border-bottom:1px solid var(--line);text-decoration:none}
+.srcs a:hover b{text-decoration:underline}
+.srcs .i{font:400 28px/1 var(--display)}
+.srcs b{font-weight:600}
+.srcs small{display:block;font:400 12px/1.5 var(--mono);color:var(--mute);margin-top:4px}
+.srcs .arr{font:500 12px var(--mono)}
+
+footer{padding:40px 0 60px;font:400 12px/1.6 var(--mono);color:var(--mute)}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+/* dialog */
+dialog{border:1px solid #000;padding:0;width:min(880px,calc(100vw - 32px));max-height:calc(100dvh - 48px);background:#fff;color:#000;box-shadow:10px 10px 0 #000;overflow:hidden}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+dialog[open]{display:flex;flex-direction:column;animation:pop 220ms var(--ease)}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+.dh{display:flex;align-items:center;gap:10px;border-bottom:1px solid #000;padding:10px 10px 10px 16px}
+.dh .k{margin-right:auto;color:#000}
+.dbody{overflow:auto;padding:26px 26px 30px}
+.dbody h2{font:400 54px/.9 var(--display);margin:10px 0 12px;text-transform:uppercase}
+.dbody .desc{font-size:19px;color:var(--soft);margin:0 0 22px;max-width:60ch}
+.chips{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #000;border-left:1px solid #000;margin-bottom:24px}
+.chip{border-right:1px solid #000;border-bottom:1px solid #000;padding:10px 12px;font-size:14px;line-height:1.4;color:var(--soft)}
+.chip b{display:block;font:700 10.5px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.dbody pre{margin:0;border:1px solid #000;background:var(--wash);padding:18px;font:400 13px/1.7 var(--mono);white-space:pre-wrap;word-break:break-word}
+.dbody pre .t{font-weight:700}
+.dbody pre .p,.fig pre .p{background:#000;color:#fff;padding:0 3px}
+
+@media (max-width:1020px){
+  nav.top{display:none;position:absolute;top:60px;left:0;right:0;flex-direction:column;background:#fff;border-bottom:1px solid #000;padding:10px 20px 16px}
+  nav.top.open{display:flex}
+  nav.top a{padding:12px 4px;border:0;border-bottom:1px solid var(--line)}
+  .btn.menu{display:inline-flex}
+  .toc-grid{grid-template-columns:repeat(2,1fr)}
+  .sec{grid-template-columns:minmax(0,1fr);gap:28px;padding:72px 0}
+  .side{position:static}
+  .side .n{font-size:72px}
+  .tree{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:640px){
+  body{font-size:17px}
+  .wrap{padding:0 18px}
+  .hero{padding:56px 0 52px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stats div:nth-child(2){border-right:0}
+  .stats div:nth-child(-n+2){border-bottom:1px solid #000}
+  .toc-grid,.g2,.g3,.bots,.tree{grid-template-columns:1fr}
+  .toc-grid a{min-height:0}
+  .step{grid-template-columns:48px minmax(0,1fr);gap:12px}
+  .step .no{font-size:36px}
+  .chips{grid-template-columns:repeat(2,1fr)}
+  .fig pre{font-size:12.5px;padding:14px}
+  .dbody{padding:20px 18px}
+  .dbody h2{font-size:42px}
+  .srcs a{grid-template-columns:34px minmax(0,1fr)}
+  .srcs .arr{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#top"><i>//</i>Grok Bot Field Guide</a>
+    <nav class="top" id="nav">
+      <a href="#basics">Basics</a>
+      <a href="#start">Start</a>
+      <a href="#how">How it works</a>
+      <a href="#brain">Second brain</a>
+      <a href="#system">System</a>
+      <a href="#team">Team</a>
+      <a href="#bots">10 bots</a>
+      <a href="#sources">Sources</a>
+    </nav>
+    <button class="btn sm menu" id="menu" aria-expanded="false" aria-controls="nav">Menu</button>
+  </div>
+  <div class="prog" id="prog"></div>
+</header>
+
+<main id="top">
+
+<section class="hero">
+  <div class="wrap">
+    <div class="k">A field guide / 4 posts / official docs</div>
+    <h1>Grok Bot,<br>from one <span>bot</span><br>to a team</h1>
+    <p class="lead">How to set it up, what to ask, and how to keep it safe. Written from four X posts and checked against the xAI docs.</p>
+    <div class="cta">
+      <a class="btn solid" href="#start">Start here</a>
+      <a class="btn" href="#bots">Get the 10 prompts</a>
+    </div>
+    <div class="stats">
+      <div><b>06</b><span>Setup steps</span></div>
+      <div><b>10</b><span>Ready prompts</span></div>
+      <div><b>14</b><span>Bot team model</span></div>
+      <div><b>16</b><span>Launch checks</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="toc">
+  <div class="wrap">
+    <div class="toc-h">
+      <div><div class="k">Contents</div><h2>The path</h2></div>
+      <div class="k">Read in order or jump in</div>
+    </div>
+    <div class="toc-grid">
+      <a href="#basics"><span class="k">Part 01</span><b>Basics</b><p>What a bot is and why it is not a chat.</p></a>
+      <a href="#start"><span class="k">Part 02</span><b>Get started</b><p>Install, sign in, first task, tag @bot.</p></a>
+      <a href="#how"><span class="k">Part 03</span><b>How it works</b><p>Computer, memory, skills, routines, approvals.</p></a>
+      <a href="#brain"><span class="k">Part 04</span><b>Second brain</b><p>Turn your notes into finished work.</p></a>
+      <a href="#system"><span class="k">Part 05</span><b>Run a system</b><p>Harness, loop, graph and the autonomy ladder.</p></a>
+      <a href="#team"><span class="k">Part 06</span><b>A 14 bot team</b><p>One person, four leads, ten helpers.</p></a>
+      <a href="#bots"><span class="k">Part 07</span><b>10 ready bots</b><p>Copy a prompt, fill the gaps, send.</p></a>
+      <a href="#rules"><span class="k">Part 08</span><b>Write your own</b><p>The rules every good bot prompt shares.</p></a>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+
+<!-- 01 -->
+<section class="sec" id="basics">
+  <div class="side"><div class="n">01</div><h2>Basics</h2><div class="src">Sources: xAI docs, @0xwhrrari</div></div>
+  <div class="body">
+    <p class="intro">A chat gives you an answer. A bot gives you a finished job.</p>
+    <p>Grok Bot gives you bots you keep. Each one has a name, a job, and memory that grows over time. They work on a cloud computer with a browser, files, and a terminal, so the work lands in your real tools.</p>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_01 / chat vs bot</span><span class="t">@0xwhrrari</span></div>
+<pre>CHAT   request -> response -> session ends
+
+BOT    goal -> inspect -> act -> verify -> continue -> deliver</pre>
+    </div>
+    <h4>What a bot can do</h4>
+    <ul class="list">
+      <li>Keep a browser open and use any website, even ones with no API.</li>
+      <li>Create files, run commands, and use connected apps.</li>
+      <li>Keep working while your laptop is closed.</li>
+      <li>Run jobs on a schedule or when something happens.</li>
+      <li>Talk to other bots and hand work to them.</li>
+      <li>Ask you before anything you cannot undo.</li>
+    </ul>
+    <p>You talk to it by typing, dictating, or voice chat. It runs on macOS, Windows, Linux, iPhone and Android. On X, its handle is <a href="https://x.com/bot">@bot</a>.</p>
+    <div class="note"><b>Key idea</b>The output is not advice. It is the changed sheet, the saved draft, the sorted folder, or the review queue.</div>
+  </div>
+</section>
+
+<!-- 02 -->
+<section class="sec" id="start">
+  <div class="side"><div class="n">02</div><h2>Get started</h2><div class="src">Source: docs.x.ai/grok-bot/get-started</div></div>
+  <div class="body">
+    <h3>Six steps</h3>
+    <div class="steps">
+      <div class="step"><div class="no">01</div><div><h5>Get access</h5><p>You need one of: a paid Cursor plan, a SuperGrok, SuperGrok Plus or SuperGrok Heavy plan linked to Cursor, or a Grok Business seat.</p></div></div>
+      <div class="step"><div class="no">02</div><div><h5>Install the app</h5><p>Download it from <a href="https://x.ai/bot">x.ai/bot</a>. macOS: drag it to Applications. Windows: run the installer. Linux: use the .deb, .rpm or AppImage.</p></div></div>
+      <div class="step"><div class="no">03</div><div><h5>Sign in</h5><p>It uses your Cursor account. For SuperGrok, go to <span class="kbd">Settings > Usage &amp; Billing > Get Access with Grok</span>. Your first bot, named Grok Bot, is made for you.</p></div></div>
+      <div class="step"><div class="no">04</div><div><h5>Give it one job</h5><p>Put its main job in the first message and ask it to remember. Add more bots with <span class="kbd">New > Create new Bot</span>. Focused bots beat one bot that does everything.</p></div></div>
+      <div class="step"><div class="no">05</div><div><h5>Let it sign in</h5><p>When it hits a login, choose <b>Take over</b>, sign in yourself, then choose <b>I'm done</b>. The bot never sees your password. You can also add apps from <b>Connect apps</b>.</p></div></div>
+      <div class="step"><div class="no">06</div><div><h5>Review, then save</h5><p>Ask for fixes. Say what to keep for next time. When it works every time, ask it to save a skill or a routine.</p></div></div>
+    </div>
+
+    <h3>A good request</h3>
+    <div class="tw"><table>
+      <tr><th>Part</th><th>Ask yourself</th></tr>
+      <tr><td>Outcome</td><td>What should be finished?</td></tr>
+      <tr><td>Sources</td><td>Which apps, sites, files or chats matter?</td></tr>
+      <tr><td>Limits</td><td>What must it avoid, or ask first?</td></tr>
+      <tr><td>Deliverable</td><td>What should it give back?</td></tr>
+      <tr><td>Review point</td><td>When should it stop for you?</td></tr>
+    </table></div>
+    <div class="fig wrap-pre" data-copy>
+      <div class="fig-h"><span>Prompt / first bot job</span><button class="btn sm cp">Copy</button></div>
+<pre>Your job is product performance. Investigate product-performance questions with our observability tools. Preserve links and screenshots, separate evidence from hypotheses, and lead with the highest-impact issue. Never change production settings. Remember this for future work.</pre>
+    </div>
+    <div class="fig wrap-pre" data-copy>
+      <div class="fig-h"><span>Prompt / five minute first test</span><button class="btn sm cp">Copy</button></div>
+<pre>Summarize this document in five bullets. List every date, decision, and open question in a separate section. Cite the page or section for each item. Do not change the source file.</pre>
+    </div>
+
+    <h3>Tag @bot on X</h3>
+    <p>Reply to any post with a task. Your main bot gets the post, the post you replied to, and any quoted posts. The work stays in the app. @bot only posts a short reply.</p>
+    <div class="fig wrap-pre" data-copy>
+      <div class="fig-h"><span>Example reply</span><button class="btn sm cp">Copy</button></div>
+<pre>@bot summarize this thread and send the key points to my Slack</pre>
+    </div>
+    <h4>You need</h4>
+    <ul class="list">
+      <li>Your X account connected on grok.com: <span class="kbd">Settings > Account > Connect</span>.</li>
+      <li>Grok Bot access on that same Grok account.</li>
+      <li>At least one bot of your own. Shared bots cannot take tags.</li>
+      <li>An X account based in a supported country. Not yet: Australia, UK, EU, Iceland, Liechtenstein, Norway. A VPN does not change this.</li>
+    </ul>
+    <div class="tw"><table>
+      <tr><th>@bot replies</th><th>Meaning</th></tr>
+      <tr><td>Sent to your Grok Bot</td><td>It worked. Open the app to follow the job.</td></tr>
+      <tr><td>Sign up for Grok Bot</td><td>No Grok account is linked to this X account.</td></tr>
+      <tr><td>Grok Bot isn't set up yet</td><td>Accounts are linked, but you have no bot yet.</td></tr>
+      <tr><td>No reply</td><td>The request did not arrive. Check region and setup.</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- 03 -->
+<section class="sec" id="how">
+  <div class="side"><div class="n">03</div><h2>How it works</h2><div class="src">Source: xAI docs</div></div>
+  <div class="body">
+    <p class="intro">Six parts do most of the work.</p>
+    <div class="grid g2">
+      <div class="cell"><span class="k">A / Computer</span><h5>One shared computer</h5><p>All your bots share one cloud computer: files, browser logins and app logins. Each bot gets its own screen. It is not a security wall between bots.</p></div>
+      <div class="cell"><span class="k">B / Memory</span><h5>Memory</h5><p>A bot keeps its role, your preferences and past summaries. For big decisions, ask it to check the live source, not its memory.</p></div>
+      <div class="cell"><span class="k">C / Skills</span><h5>Skills</h5><p>A saved method for one task. Use <b>Teach a task</b> to show it a browser flow once and it writes the skill.</p></div>
+      <div class="cell"><span class="k">D / Routines</span><h5>Routines</h5><p>When a skill runs. On a schedule, or when an event happens. They run while your laptop is closed.</p></div>
+      <div class="cell"><span class="k">E / Groups</span><h5>Group chats</h5><p>Put 2 to 6 bots in one chat. Type <code>@</code> to pick who answers. Bots can also message each other and pass work on.</p></div>
+      <div class="cell"><span class="k">F / Approvals</span><h5>Approvals</h5><p>Risky actions show a card: <b>Allow once</b>, <b>Always allow</b>, or <b>Deny</b>. Cards from routines expire after about 10 minutes.</p></div>
+    </div>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_02 / the shared computer</span><span class="t">@0xwhrrari</span></div>
+<pre>SHARED COMPUTER
+  |-> shared browser sessions
+  |-> shared files
+  |-> shared app logins
+  |-> separate bot screens
+
+NOT
+  |-> separate secrets per bot
+  |-> separate trust zones per bot</pre>
+    </div>
+    <h3>Make a routine</h3>
+    <p>Ask the bot that owns the job. Before you turn it on, confirm six things.</p>
+    <div class="grid g3">
+      <div class="cell"><span class="k">01</span><p>Which bot owns it</p></div>
+      <div class="cell"><span class="k">02</span><p>Schedule and time zone</p></div>
+      <div class="cell"><span class="k">03</span><p>Input source</p></div>
+      <div class="cell"><span class="k">04</span><p>Expected result</p></div>
+      <div class="cell"><span class="k">05</span><p>What needs approval</p></div>
+      <div class="cell"><span class="k">06</span><p>What to do if a source is missing</p></div>
+    </div>
+    <div class="fig wrap-pre" data-copy>
+      <div class="fig-h"><span>Prompt / routine</span><button class="btn sm cp">Copy</button></div>
+<pre>Every weekday at 8:00 AM, run the Daily customer-risk skill against the current account list. Post a linked watch list in this conversation. Do not contact customers. If the source data is unavailable, report the failure instead of using old data.</pre>
+    </div>
+    <p>Use <b>Test run</b> with safe inputs before you turn it on.</p>
+  </div>
+</section>
+
+<!-- 04 -->
+<section class="sec" id="brain">
+  <div class="side"><div class="n">04</div><h2>Build a second brain</h2><div class="src">Source: @tsukiema_, "Second Brain Engineering"</div></div>
+  <div class="body">
+    <p class="intro">Give a bot your notes, a few samples of your writing, and one folder. Then ask for real work: a client reply, a plan, or a morning list of decisions.</p>
+    <p>Most second brain builds live on a laptop and stop when it closes. Grok Bot runs on a cloud computer, so it keeps going.</p>
+
+    <h3><em>01</em> Give it a job</h3>
+    <p>Pick one task you do often and can judge yourself. A reply to a project update is a good first one.</p>
+    <ol class="list">
+      <li>Go to <span class="kbd">New > Create new Bot</span>. Open <b>Edit Profile</b> and name it <b>Brain</b>.</li>
+      <li>Paste the description below.</li>
+      <li>Pick about 20 messages you wrote: normal replies, a project update, a request, a correction.</li>
+      <li>Remove anything private. Every bot on your account can see these files.</li>
+      <li>Attach them with a note naming one project, then paste the setup prompt.</li>
+    </ol>
+    <div class="fig wrap-pre" data-copy>
+      <div class="fig-h"><span>Bot description / Brain</span><button class="btn sm cp">Copy</button></div>
+<pre>Maintain my second brain in /workspace/brain.
+Read INDEX.md and rules.md at the start of a task, then open the relevant files.
+Use voice.md when drafting in my name.
+Preserve original material in raw/ and link each summary to its sources.
+Check changing facts in the current source before using them.
+Save drafts and plans in out/ and show me the result.
+Ask for approval before sending, publishing, purchasing, deleting, or changing external records.
+Report missing access and failed checks clearly.</pre>
+    </div>
+    <div class="fig wrap-pre" data-copy>
+      <div class="fig-h"><span>Prompt / setup</span><button class="btn sm cp">Copy</button></div>
+<pre>Create /workspace/brain with raw/, people/, projects/, and out/.
+Create INDEX.md, log.md, me.md, voice.md, attention.md, and rules.md.
+
+Preserve the supplied messages in raw/ with their available dates and authors.
+Write me.md using only supported facts about my work, current goals, collaborators, and commitments. Mark uncertain details as questions.
+Write voice.md with up to 10 specific writing rules. Support each rule with a short line I actually wrote and a link to its saved source.
+Leave unsupported details blank.
+
+INDEX.md should map each file to its purpose. Add a dated record of this setup to log.md.
+Show me me.md and voice.md for correction before using them in a draft.</pre>
+    </div>
+    <p>Read both files. Watch for false promises: a talk about a possible deadline can turn into a fake commitment. No writing samples yet? Ask Brain to interview you one question at a time.</p>
+
+    <h3><em>02</em> Make every fact traceable</h3>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_03 / folder map</span><span class="t">/workspace/brain</span></div>
+<pre>/workspace/brain/
+  raw/          Original messages, notes, and exports
+  people/       Working context about collaborators
+  projects/     Project summaries and decisions
+  out/          Drafts, plans, and briefs to review
+  me.md         Confirmed background and goals
+  voice.md      Writing guidance with examples
+  attention.md  Current priorities and next actions
+  rules.md      Approved workflow corrections
+  INDEX.md      File map
+  log.md        Dated record of changes</pre>
+    </div>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_04 / a traceable note</span><span class="t">example</span></div>
+<pre>Project:        Website launch
+Source:         raw/2026-10-21-client-update.txt
+Observed:       The client requested a revised opening section.
+Status checked: 2026-10-21, 16:20 Europe/London
+Open question:  Who approves the final copy?</pre>
+    </div>
+    <ul class="list">
+      <li>Put a source link and a last checked date next to every important claim.</li>
+      <li>Keep originals untouched. Update the summary that points to them.</li>
+      <li>Recheck dates, meeting times, payments and owners each time.</li>
+      <li>If a source will not open, show the gap: "The note says Friday; the latest thread could not be opened."</li>
+      <li>If two sources disagree, keep both and flag it.</li>
+    </ul>
+
+    <h3><em>03</em> Turn one chat into finished work</h3>
+    <p>Do this before you connect an inbox or add schedules. Attach a real project chat and your rough notes.</p>
+    <div class="fig wrap-pre" data-copy>
+      <div class="fig-h"><span>Prompt / thread to reply</span><button class="btn sm cp">Copy</button></div>
+<pre>Use the attached conversation to prepare my next reply.
+
+Read voice.md, rules.md, and the relevant project file first.
+Preserve the new source material in raw/ and update the project summary with source links.
+
+Return:
+1. The other person's request in one sentence.
+2. Confirmed commitments, with a source for each.
+3. Missing information that affects the reply.
+4. A concise reply in my voice, saved in out/.
+
+Use current source material for dates, prices, and status.
+If a commitment needs my decision, leave it as a clearly marked question outside the draft.
+Keep supporting notes separate from the message text.
+Show the draft here and leave sending to me.</pre>
+    </div>
+    <h4>Check four things</h4>
+    <ul class="list">
+      <li>Did it keep who said what?</li>
+      <li>Does the draft answer the real request?</li>
+      <li>Are ideas kept apart from promises you already made?</li>
+      <li>Does it follow your writing rules?</li>
+    </ul>
+    <p>Fix the draft until you would send it. Then save the method.</p>
+    <div class="fig wrap-pre" data-copy>
+      <div class="fig-h"><span>Prompt / save as skill</span><button class="btn sm cp">Copy</button></div>
+<pre>Save this reviewed workflow as a private skill called Thread to Reply.
+Include the required inputs, relevant brain files, source checks, output location, and approval boundary.
+Add the checks we used to review this draft.
+For an incomplete thread, ask for the missing context before proposing a commitment.
+Show me the saved instructions.</pre>
+    </div>
+    <div class="tw"><table>
+      <tr><th>Next skill</th><th>Result</th><th>Review question</th></tr>
+      <tr><td>Meeting notes</td><td>Dated action plan with owners</td><td>Did each owner accept the task?</td></tr>
+      <tr><td>Saved idea + links</td><td>Article outline or post draft</td><td>Which claims still need checking?</td></tr>
+    </table></div>
+
+    <h3><em>04</em> Control what comes in</h3>
+    <p>Make a Gmail label called <b>Brain</b> and add it to a few emails. Open <b>Connect apps</b>, add Gmail, then type <code>@</code> in the chat to pick it. Start with five emails so you can check each one.</p>
+    <div class="fig wrap-pre" data-copy>
+      <div class="fig-h"><span>Prompt / Gmail intake</span><button class="btn sm cp">Copy</button></div>
+<pre>Run one intake pass for up to five Gmail messages labelled Brain.
+
+For each message:
+- Record its message ID, sender, timestamp, subject, and source link.
+- Check whether that ID was already processed.
+- Save the original content in raw/ using a stable filename.
+- Update the relevant person or project file with a linked summary.
+- Put ambiguous items in a review list.
+
+Record processed IDs in intake-state.md only after the source and summary are saved successfully.
+Update INDEX.md and log.md.
+Return the saved paths, skipped duplicates, and unresolved items.
+Keep mailbox contents unchanged.</pre>
+    </div>
+    <p>Run it again on the same emails. It should skip them and make no copies. On iPhone you can also share photos, files, links or text into a chat. On Android, text only. For links, save the address, the date, and why you kept it.</p>
+
+    <h3><em>05</em> Start each morning with decisions</h3>
+    <p>Only after intake and drafts pass review. Change the times to yours.</p>
+    <div class="tw"><table>
+      <tr><th>When</th><th>Job</th><th>Result</th></tr>
+      <tr><td>23:00 daily</td><td>File new labelled items</td><td>Linked summaries and an intake log</td></tr>
+      <tr><td>07:30 weekdays</td><td>Morning brief</td><td>Current facts, drafts and decisions</td></tr>
+      <tr><td>Sunday 18:00</td><td>Review the brain</td><td>Conflicts, stale notes, proposed fixes</td></tr>
+      <tr><td>17:00 weekdays</td><td>Optional: update attention.md</td><td>Your stated goals kept apart from guesses</td></tr>
+    </table></div>
+    <div class="fig wrap-pre" data-copy>
+      <div class="fig-h"><span>Prompt / morning brief</span><button class="btn sm cp">Copy</button></div>
+<pre>Draft a weekday 07:30 morning routine in <span class="p">[YOUR TIME ZONE]</span>.
+Read rules.md and attention.md, then check the relevant current sources.
+
+Save the brief in out/ and show it in this conversation.
+Keep it under 400 words, with these sections only when useful:
+
+Facts: relevant changes, each with a source and check time.
+Inferences: possible implications, explicitly labelled.
+Completed: files or drafts actually produced, with paths.
+Your decision: items waiting for my approval and the exact choice needed.
+Questions: missing information that blocks useful work.
+
+Prioritize my confirmed commitments and deadlines.
+If nothing changed, stay quiet. If a source check fails, report the failure and affected items.
+Show the schedule, next run, sources, and approval boundary before enabling it.</pre>
+    </div>
+    <p>A good decision is exact: "Approve the new opening in out/launch-reply.md; the client needs it before copy review." Not "Follow up on launch".</p>
+
+    <h3><em>06</em> Give fixes a home</h3>
+    <p>When Brain repeats a mistake, save a rule with a clear scope. "Sound natural" is vague. "In client replies, use their first name and skip the greeting in an active thread" can be checked.</p>
+    <div class="fig wrap-pre" data-copy>
+      <div class="fig-h"><span>Prompt / save a rule</span><button class="btn sm cp">Copy</button></div>
+<pre>Turn this correction into a proposed rule for rules.md.
+State when it applies and include a short example.
+Check for an existing rule that covers the same behavior or conflicts with it.
+Show me the proposed change before saving it.
+Apply the approved rule to the current artifact and show the revision.</pre>
+    </div>
+    <div class="fig wrap-pre" data-copy>
+      <div class="fig-h"><span>Prompt / audit the brain</span><button class="btn sm cp">Copy</button></div>
+<pre>Choose one active project in /workspace/brain.
+Show its latest source, current summary, next action, and any related draft in out/.
+Recheck the facts that could have changed.
+List unresolved contradictions and anything you could not verify.
+Explain which rule or skill guided the work.</pre>
+    </div>
+    <div class="note"><b>First session</b>Do one full loop and stop: add a source, check the summary, get a draft, fix it. Save it as a skill. Then schedule it. Keep a backup of key results outside the bot's computer.</div>
+  </div>
+</section>
+
+<!-- 05 -->
+<section class="sec" id="system">
+  <div class="side"><div class="n">05</div><h2>Run it as a system</h2><div class="src">Source: @0xwhrrari, "The AI Team That Never Sleeps"</div></div>
+  <div class="body">
+    <p class="intro">Most people make one bot, give it a vague task, connect every account, and wait. That is how an always on bot becomes always on confusion.</p>
+    <p>The model reasons. Three layers around it decide if the work is reliable.</p>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_05 / one model, three layers</span><span class="t">@0xwhrrari</span></div>
+<pre>MODEL      Grok reasons and picks the next action
+HARNESS    the computer, tools, context, state, permissions, traces
+LOOP       the evidence driven cycle that improves one job
+GRAPH      the routing and handoffs between many bots
+APPROVAL   keeps risky and final actions with you</pre>
+    </div>
+    <div class="tw"><table>
+      <tr><th>If the bot...</th><th>You have a...</th></tr>
+      <tr><td>Forgets a preference</td><td>State problem</td></tr>
+      <tr><td>Opens the wrong tool</td><td>Routing problem</td></tr>
+      <tr><td>Sends what should be a draft</td><td>Permission problem</td></tr>
+      <tr><td>Repeats a failed action</td><td>Loop problem</td></tr>
+      <tr><td>Keeps asking who does what</td><td>Graph problem</td></tr>
+    </table></div>
+
+    <h3><em>A</em> Harness</h3>
+    <p>The world the bot works in. Give it a job before a task.</p>
+    <div class="grid g2">
+      <div class="cell"><span class="k">Bad first job</span><p>"Help me with my business."</p></div>
+      <div class="cell"><span class="k">Good first job</span><p>"Own weekly competitor monitoring and deliver a cited change report."</p></div>
+    </div>
+    <ul class="list">
+      <li><b>Smallest tool set.</b> Connect only what the role needs. More access means more ways to fail.</li>
+      <li><b>Connect once, allow per role.</b> A connection works for every bot on the account. The role says what this bot may do with it.</li>
+      <li><b>Store work in files.</b> Messages are for talking. Files carry the state to the next bot.</li>
+      <li><b>Hand off the login, never the password.</b> Sign in yourself on Take over. Chats are not a safe for secrets.</li>
+      <li><b>Need real separation?</b> Use separate accounts. A polite instruction is not a security control.</li>
+    </ul>
+    <h4>Draw the approval line by "can it be undone"</h4>
+    <div class="grid g2">
+      <div class="cell"><span class="k">Finish without asking</span><p>Research, summarize, sort, draft, organize, prepare, stage, simulate.</p></div>
+      <div class="cell"><span class="k">Stop for approval</span><p>Send, publish, buy, move money, delete or overwrite, change access, change production, accept legal terms.</p></div>
+    </div>
+    <p>A good run finishes every step that can be undone and stops cleanly at the rest. It should not come back at 10 percent done.</p>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_06 / a good receipt</span><span class="t">json</span></div>
+<pre>{
+  "completed": ["researched 42 accounts", "ranked 10 prospects", "drafted 10 messages"],
+  "sent": 0,
+  "published": 0,
+  "waiting_for_approval": ["send outreach batch", "update production CRM"]
+}</pre>
+    </div>
+
+    <h3><em>B</em> Loop</h3>
+    <p>"Keep trying until it works" is not a loop. It is an open budget with no clear goal.</p>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_07 / five parts of a loop</span><span class="t">@0xwhrrari</span></div>
+<pre>TARGET      what success means
+EVIDENCE    how the result is checked
+FEEDBACK    the exact gap
+BOUND       how many retries are allowed
+ESCALATION  what happens when retries fail</pre>
+    </div>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_08 / retry rules</span><span class="t">example</span></div>
+<pre>retry twice for a passing tool failure
+repair once for a failed format check
+ask the human when evidence conflicts
+stop when the cost or time budget is reached</pre>
+    </div>
+    <ul class="list">
+      <li><b>Teach, then save.</b> Run it once with the bot watching. Fix edge cases. Save the routine only when the result is right.</li>
+      <li><b>Best first routine:</b> weekly or more, spans two or more tools, stable, easy to check, and can be undone until the last step.</li>
+      <li><b>Schedule</b> makes it on time. <b>Trigger</b> makes it react. Both should call the same tested routine.</li>
+      <li><b>Check apart from building.</b> Code: tests and a clean diff. Visuals: a screenshot and a checklist. Research: sources and claim to evidence. Ops: counts before and after.</li>
+    </ul>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_09 / a routine spec</span><span class="t">yaml</span></div>
+<pre>routine: weekly_competitor_scan
+trigger:
+  type: schedule
+  value: monday 06:00
+output: /reports/competitors/YYYY-MM-DD.md
+verify:
+  - source links open
+  - changes are newer than previous report
+  - every claim maps to evidence
+approval:
+  - publishing requires human approval</pre>
+    </div>
+
+    <h3><em>C</em> Graph</h3>
+    <p>One bot is a loop. A team of bots is a graph. A chief bot takes your goal, splits it, routes it, and tracks it. Specialists own their lane.</p>
+    <ul class="list">
+      <li><b>Hire roles, not personalities.</b> Clear owners make failures easy to trace.</li>
+      <li><b>Pass ownership, not transcripts.</b> Send a small handoff packet, not the whole chat.</li>
+      <li><b>Run in parallel only what is independent.</b> The goal is less waiting, not more bots.</li>
+      <li><b>Give the group a goal, not a task list.</b> If you still copy files between bots, it is just chat windows.</li>
+    </ul>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_10 / handoff packet</span><span class="t">json</span></div>
+<pre>{
+  "from": "researcher",
+  "to": "writer",
+  "objective": "draft the launch analysis",
+  "artifacts": ["evidence-pack.json", "outline.md"],
+  "decisions": ["focus on persistent agents"],
+  "constraints": ["no unverified performance claims"],
+  "open_questions": ["confirm enterprise availability"],
+  "next_gate": "fact_check"
+}</pre>
+    </div>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_11 / a one person company</span><span class="t">@0xwhrrari</span></div>
+<pre>YOU
+ |
+ v
+CHIEF OF STAFF
+ |-> RESEARCH BOT      output: cited evidence pack
+ |-> CONTENT BOT       output: draft + asset brief
+ |-> REVIEW BOT        output: fact, style, format report
+ |-> DISTRIBUTION BOT  output: staged posts + schedule
+ |
+ v
+YOU APPROVE PUBLICATION</pre>
+    </div>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_12 / role contract</span><span class="t">yaml</span></div>
+<pre>name: Research Operator
+owns: source collection and evidence packs
+inputs:   [topic brief, approved source list, previous research archive]
+outputs:  [cited findings, contradiction log, open questions]
+may:      [browse public sources, organize research files, draft summaries]
+must_ask_before:
+  - messaging a person
+  - purchasing access
+  - publishing anything
+done_when:
+  - every factual claim has evidence
+  - conflicts are surfaced
+  - unresolved gaps are explicit</pre>
+    </div>
+
+    <h3><em>D</em> The ten step order</h3>
+    <div class="steps">
+      <div class="step"><div class="no">01</div><div><h5>Start with a real recurring job</h5><p>Something you already do, with a result that is easy to judge.</p></div></div>
+      <div class="step"><div class="no">02</div><div><h5>Define the role in one sentence</h5><p>If it needs six unrelated verbs, split it.</p></div></div>
+      <div class="step"><div class="no">03</div><div><h5>Define done first</h5><p>Write the checks before the run starts.</p></div></div>
+      <div class="step"><div class="no">04</div><div><h5>Connect only the tools it needs</h5><p>Add access when a real task is blocked, not before.</p></div></div>
+      <div class="step"><div class="no">05</div><div><h5>Show it once</h5><p>Walk the real path. Explain each choice. Fix the first output in the same chat.</p></div></div>
+      <div class="step"><div class="no">06</div><div><h5>Save it as a routine</h5><p>Inputs, output place, checks, schedule and approval line.</p></div></div>
+      <div class="step"><div class="no">07</div><div><h5>Add a checker before more freedom</h5><p>Run it several times against the same rubric.</p></div></div>
+      <div class="step"><div class="no">08</div><div><h5>Limit retries, plan escalation</h5><p>Cap by count, time and cost.</p></div></div>
+      <div class="step"><div class="no">09</div><div><h5>Add a specialist only at a bottleneck</h5><p>Split research from writing, or checking from building, when it gets noisy.</p></div></div>
+      <div class="step"><div class="no">10</div><div><h5>Audit every week</h5><p>Ask each bot for a receipt and spot check one result. Would you notice if this routine vanished? If not, delete it.</p></div></div>
+    </div>
+
+    <h3><em>E</em> The autonomy ladder</h3>
+    <p>Move up only with proof. Move down when a routine gets worse.</p>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_13 / levels</span><span class="t">@0xwhrrari</span></div>
+<pre>LEVEL 0  OBSERVE                watches, changes nothing
+LEVEL 1  PREPARE                researches, drafts, stages work that can be undone
+LEVEL 2  EXECUTE WITH APPROVAL  does the job, stops before risky steps
+LEVEL 3  SCHEDULE OR TRIGGER    starts on its own, returns a receipt
+LEVEL 4  COORDINATE             a chief routes work, asks you only for judgment</pre>
+    </div>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_14 / promotion gate</span><span class="t">yaml</span></div>
+<pre>promotion_gate:
+  minimum_clean_runs: 5
+  verification_pass_rate: 1.0
+  unresolved_side_effects: 0
+  rollback_tested: true
+  approval_policy_tested: true
+  receipt_complete: true</pre>
+    </div>
+
+    <h3><em>F</em> Three patterns to copy</h3>
+    <div class="grid g3">
+      <div class="cell"><span class="k">Pattern 1</span><h5>Night research</h5><p>Scout searches set sources. Checker drops weak claims. Cluster merges repeats. Brief writes the summary. You get one queue at breakfast.</p></div>
+      <div class="cell"><span class="k">Pattern 2</span><h5>Bug repair</h5><p>One bot reproduces the bug with steps, logs and screenshots. Only then does the fixing bot get the case.</p></div>
+      <div class="cell"><span class="k">Pattern 3</span><h5>Content gate</h5><p>Idea, research, draft, fact check, assets, package. Nothing goes public without your yes.</p></div>
+    </div>
+
+    <h3><em>G</em> Mistakes that waste time</h3>
+    <ol class="list">
+      <li>One bot owns everything.</li>
+      <li>Tasks with no definition of done.</li>
+      <li>Every bot gets the full chat history.</li>
+      <li>Thinking the shared computer keeps bots apart.</li>
+      <li>A loop with no hard stop.</li>
+      <li>The builder checks its own work in the same context.</li>
+      <li>Everything waits for approval, so nothing is faster.</li>
+      <li>Nothing waits for approval, so it can spend, delete or post as you.</li>
+      <li>Old routines are never deleted.</li>
+    </ol>
+
+    <h3><em>H</em> Launch checklist</h3>
+    <p>Ask these before you leave a bot running overnight. Several no answers mean it needs a better harness, not more freedom.</p>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_15 / before overnight runs</span><button class="btn sm cp">Copy</button></div>
+<pre>[ ] Does the bot own one clear result
+[ ] Is done defined before the run begins
+[ ] Are inputs and output locations explicit
+[ ] Does it have only the tools required for the job
+[ ] Are secrets and shared sessions treated as account-wide access
+[ ] Are logins handed off to the human instead of pasted into chat
+[ ] Is durable state stored outside the conversation
+[ ] Does every important claim or change produce evidence
+[ ] Does every schedule or trigger call a tested routine
+[ ] Are retries bounded by count, time, and cost
+[ ] Are sending, publishing, purchases, deletion, permissions,
+    production changes, and legal terms behind approval
+[ ] Can another bot pick up the work from files and a handoff packet
+[ ] Does a bot group get one goal with clear owners
+[ ] Can the system resume after an interruption
+[ ] Can you explain what happened without asking the same bot
+[ ] Does the weekly audit remove weak routines</pre>
+    </div>
+  </div>
+</section>
+
+<!-- 06 -->
+<section class="sec" id="team">
+  <div class="side"><div class="n">06</div><h2>A 14 bot team</h2><div class="src">Source: @akshay_pachaar</div></div>
+  <div class="body">
+    <p class="intro">Akshay runs 14 bots but talks to only 4. Each lead runs its own helpers.</p>
+    <div class="tree">
+      <div class="lead-bot"><div class="h"><span>Chief of staff</span><b>Pam</b></div><ul><li>Inbox</li><li>ClickUp tasks</li><li>Purchasing</li></ul></div>
+      <div class="lead-bot"><div class="h"><span>Research</span><b>Tyrion</b></div><ul><li>Web research</li><li>X research</li><li>Post writing</li></ul></div>
+      <div class="lead-bot"><div class="h"><span>CTO</span><b>Gilfoyle</b></div><ul><li>Engineer</li><li>Reviewer</li></ul></div>
+      <div class="lead-bot"><div class="h"><span>Design</span><b>Rachel</b></div><ul><li>Graphic design</li><li>Video editing</li></ul></div>
+    </div>
+    <ul class="list">
+      <li>You give a goal to a lead. The lead splits it among helpers.</li>
+      <li>Name bots after characters you know. It makes each role easy to remember.</li>
+      <li>Leads and helpers map to the chief and specialists in Part 05.</li>
+    </ul>
+    <div class="fig">
+      <div class="fig-h"><span>Fig_16 / Akshay's chart</span><span class="t">from the post</span></div>
+      <img src="img/team.jpg" alt="Akshay at the top, four lead bots below, helper bots under each lead" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- 07 -->
+<section class="sec" id="bots">
+  <div class="side"><div class="n">07</div><h2>10 ready bots</h2><div class="src">Source: @milesdeutscher</div></div>
+  <div class="body">
+    <p class="intro">Ten full prompts. Open one, copy it, fill the parts in black, and send it to a new bot.</p>
+    <div class="how">
+      <div><b>01</b>Pick a bot</div>
+      <div><b>02</b>Copy the prompt</div>
+      <div><b>03</b>Fill the [brackets]</div>
+      <div><b>04</b>Send and approve drafts</div>
+    </div>
+    <div class="bots" id="botGrid"></div>
+  </div>
+</section>
+
+<!-- 08 -->
+<section class="sec" id="rules">
+  <div class="side"><div class="n">08</div><h2>Write your own</h2><div class="src">Patterns from all sources</div></div>
+  <div class="body">
+    <p class="intro">Every good prompt here has the same parts.</p>
+    <div class="grid g2">
+      <div class="cell"><span class="k">Role</span><p>One job, one sentence. What it owns.</p></div>
+      <div class="cell"><span class="k">Inputs</span><p>Where it reads from, and what to skip.</p></div>
+      <div class="cell"><span class="k">Steps</span><p>The order of work, written plainly.</p></div>
+      <div class="cell"><span class="k">Output</span><p>The exact format and where to save it.</p></div>
+      <div class="cell"><span class="k">Done when</span><p>Checks it must pass before it reports.</p></div>
+      <div class="cell"><span class="k">Approval</span><p>What it must never do without you.</p></div>
+    </div>
+    <ul class="list">
+      <li>Treat saved content as data, never as instructions.</li>
+      <li>Every claim links to a source and a date.</li>
+      <li>Say "I could not check this" instead of guessing.</li>
+      <li>Limit how much it sends you. Three items beats thirty.</li>
+      <li>Stay quiet when nothing changed.</li>
+      <li>Drafts only. You send, post and pay.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- sources -->
+<section class="sec" id="sources">
+  <div class="side"><div class="n">//</div><h2>Sources</h2><div class="src">Read the originals</div></div>
+  <div class="body srcs">
+    <a href="https://x.com/milesdeutscher/status/2113653680834859262" target="_blank" rel="noopener"><span class="i">01</span><span><b>Miles Deutscher</b><small>10 Grok Bot use cases with prompts</small></span><span class="arr">X</span></a>
+    <a href="https://x.com/akshay_pachaar/status/2114717175877636508" target="_blank" rel="noopener"><span class="i">02</span><span><b>Akshay Pachaar</b><small>His 14 bot team</small></span><span class="arr">X</span></a>
+    <a href="https://x.com/tsukiema_/status/2112947495059743047" target="_blank" rel="noopener"><span class="i">03</span><span><b>Tsukiema</b><small>Second Brain Engineering</small></span><span class="arr">X</span></a>
+    <a href="https://x.com/0xwhrrari/status/2095497109524934750" target="_blank" rel="noopener"><span class="i">04</span><span><b>0xwhrrari</b><small>Grok Bot: The AI Team That Never Sleeps</small></span><span class="arr">X</span></a>
+    <a href="https://docs.x.ai/grok-bot/get-started" target="_blank" rel="noopener"><span class="i">05</span><span><b>xAI docs</b><small>Get started, bots, tag @bot, skills, approvals</small></span><span class="arr">Docs</span></a>
+    <p class="p" style="margin-top:24px;font-size:15px">Plans, regions and menus can change. Check the docs for the latest.</p>
+  </div>
+</section>
+
+</div>
+</main>
+
+<footer><div class="wrap"><span>Grok Bot Field Guide by aasha</span><span>Not affiliated with xAI</span></div></footer>
+
+<dialog id="dlg" aria-labelledby="dTitle">
+  <div class="dh"><span class="k" id="dFile"></span><button class="btn sm solid" id="copyBtn">Copy prompt</button><button class="btn sm" id="closeBtn" aria-label="Close">Close</button></div>
+  <div class="dbody">
+    <div class="k" id="dNum"></div>
+    <h2 id="dTitle"></h2>
+    <p class="desc" id="dDesc"></p>
+    <div class="chips" id="dSteps"></div>
+    <pre id="dPrompt"></pre>
+  </div>
+</dialog>
+
+<script src="prompts.js"></script>
+<script>
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const toText=b=>"<prompt>\n\n"+b.prompt.map(([t,x])=>`<${t}> ${x} </${t}>`).join("\n\n")+"\n\n</prompt>";
+const toHtml=b=>{
+  const tag=t=>`<span class="t">${esc(t)}</span>`;
+  const body=b.prompt.map(([t,x])=>tag(`<${t}>`)+" "+esc(x).replace(/\[[^\]]+\]/g,m=>`<span class="p">${m}</span>`)+" "+tag(`</${t}>`)).join("\n\n");
+  return tag("<prompt>")+"\n\n"+body+"\n\n"+tag("</prompt>");
+};
+async function copy(t){
+  try{await navigator.clipboard.writeText(t)}catch{
+    const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();document.execCommand("copy");a.remove();
+  }
+}
+
+const grid=document.getElementById("botGrid");
+grid.innerHTML=BOTS.map((b,i)=>`<button class="bot" data-i="${i}"><span class="top"><span>Bot ${b.n}</span><span>${b.steps.length} steps</span></span><b>${esc(b.name)}</b><span class="s">${esc(b.short)}</span><span class="go">Open prompt -></span></button>`).join("");
+grid.addEventListener("click",e=>{const c=e.target.closest(".bot");if(c)openBot(+c.dataset.i)});
+
+const dlg=document.getElementById("dlg"),copyBtn=document.getElementById("copyBtn");let cur=null;
+function openBot(i){
+  const b=BOTS[i];cur=b;
+  document.getElementById("dFile").textContent=`bot_${b.n} / ${slug(b.name)}.xml`;
+  document.getElementById("dNum").textContent="Bot "+b.n;
+  document.getElementById("dTitle").textContent=b.name;
+  document.getElementById("dDesc").textContent=b.desc;
+  document.getElementById("dSteps").innerHTML=b.steps.map(([t,s],k)=>`<div class="chip"><b>${String(k+1).padStart(2,"0")} ${esc(t)}</b>${esc(s)}</div>`).join("");
+  document.getElementById("dPrompt").innerHTML=toHtml(b);
+  copyBtn.textContent="Copy prompt";
+  if(!dlg.open)dlg.showModal();
+  dlg.querySelector(".dbody").scrollTop=0;
+  history.replaceState(null,"","#bot-"+b.n);
+}
+function closeDlg(){dlg.close()}
+dlg.addEventListener("close",()=>{if(location.hash.startsWith("#bot-"))history.replaceState(null,"","#bots")});
+document.getElementById("closeBtn").onclick=closeDlg;
+dlg.addEventListener("click",e=>{if(e.target===dlg)closeDlg()});
+copyBtn.onclick=async()=>{await copy(toText(cur));copyBtn.textContent="Copied";setTimeout(()=>copyBtn.textContent="Copy prompt",1600)};
+const m=location.hash.match(/^#bot-(\d+)$/);
+if(m){const i=BOTS.findIndex(b=>b.n===m[1]);if(i>=0)openBot(i)}
+
+document.querySelectorAll(".fig .cp").forEach(btn=>{
+  btn.onclick=async()=>{const pre=btn.closest(".fig").querySelector("pre");await copy(pre.textContent);btn.textContent="Copied";setTimeout(()=>btn.textContent="Copy",1600)};
+});
+
+const nav=document.getElementById("nav"),menu=document.getElementById("menu");
+menu.onclick=()=>{const o=nav.classList.toggle("open");menu.setAttribute("aria-expanded",o);menu.textContent=o?"Close":"Menu"};
+nav.addEventListener("click",e=>{if(e.target.tagName==="A"){nav.classList.remove("open");menu.setAttribute("aria-expanded",false);menu.textContent="Menu"}});
+
+const links=[...nav.querySelectorAll("a")],secs=links.map(a=>document.querySelector(a.getAttribute("href")));
+const prog=document.getElementById("prog");
+function onScroll(){
+  const h=document.documentElement;prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+"%";
+  let k=-1;secs.forEach((s,i)=>{if(s&&s.getBoundingClientRect().top<140)k=i});
+  links.forEach((a,i)=>a.classList.toggle("on",i===k));
+}
+addEventListener("scroll",onScroll,{passive:true});onScroll();
+</script>
+</body>
+</html>
